@@ -1,0 +1,1 @@
+`hokusai-pocket run:target=hokusai_paint.rb`
