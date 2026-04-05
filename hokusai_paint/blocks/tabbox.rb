@@ -105,7 +105,6 @@ module HokusaiPaint
       else
         @resizing = false
       end
-
     end
 
     def on_mounted
@@ -131,6 +130,10 @@ class TabGroup
   def initialize(parent)
     @parent = parent
     @tabs = []
+  end
+
+  def size
+    @tabs.size
   end
 
   def active

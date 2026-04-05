@@ -4,7 +4,7 @@ module HokusaiPaint
     [style]
     slider {
       height: 40.0;
-      background: rgb(89, 34, 46);
+      background: rgb(232, 159, 175);
     }
 
     container {

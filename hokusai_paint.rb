@@ -110,7 +110,7 @@ class HokusaiPaint::App < Hokusai::Block
   }
 
   bottomIcon@hover {
-    color: rgb(222,88,88);
+    color: rgb(121 37 37);
     cursor: "pointer";
   }
 
@@ -252,14 +252,18 @@ class HokusaiPaint::App < Hokusai::Block
   end
 end
 
+p Hokusai::Backend
+
 Hokusai::Backend.run(HokusaiPaint::App) do |config|
   config.title = "Hokusai Paint"
-  config.fps = 60
+ # config.fps = 60
   config.width = 1400
   config.height = 800
-  # config.draw_fps = true
-  # config.log = true
-  config.audio = false
+  config.draw_fps = true
+ # config.audio = false
+ config.hot_reload = "hokusai_paint.rb"
+  config.event_waiting = false
+  config.config_flags = HP_FLAG_VSYNC_HINT | HP_FLAG_WINDOW_RESIZABLE
 
   config.after_load do
     Hokusai.fonts.register "default", Hokusai::Backend::Font.from_ext("assets/OpenSans.ttf", 60)
