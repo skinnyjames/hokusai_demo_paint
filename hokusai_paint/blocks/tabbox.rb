@@ -133,6 +133,10 @@ class TabGroup
     @tabs = []
   end
 
+  def size
+    @tabs.size
+  end
+
   def active
     find(&:active) || begin
       first.active = true

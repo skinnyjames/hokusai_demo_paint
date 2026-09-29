@@ -8,6 +8,11 @@ module HokusaiPaint
     computed! :layer
 
     def render(canvas)
+      # if layer.control.sheet.texture.nil?
+      #   yield canvas
+      #   return
+      # end
+
       draw do
         texture(layer.control.sheet.texture, canvas.x, canvas.y) do |command|
           command.width = canvas.width
@@ -171,15 +176,17 @@ module HokusaiPaint
     }
     
     input {
-      cache: false;
       size: 18;
-      color: rgb(50, 50, 50);
-      padding: padding(10.0, 0.0, 0.0, 10.0);
+      color: rgb(200, 200, 200);
     }
     new {
+      cursor: "ibeam";
       outline: outline(1.0, 0.0, 0.0. 0.0);
       background: rgb(50, 50, 50);
       outline_color: rgb(55,55,55);
+    }
+    pad {
+      padding: padding(10.0, 0.0, 0.0, 10.0);
     }
     container {
       background: rgb(82, 74, 43);
@@ -190,14 +197,16 @@ module HokusaiPaint
     panel { ...container }
       [for="layer in layers"]
         layer { :layer="layer" :key="index" }
-    hblock { height="40"  ...new }
-      input { :model="name" ...input }
+    hblock { height="40.0"  ...new }
+      selectable { :selection_override="selection" }
+        input { :model="name" ...pad ...input :height="40.0" }
       icon { type="add" ...icon @click="add_layer" }
     EOF
 
     computed :control, default: nil
 
     uses(
+      selectable: Hokusai::Blocks::Selectable,
       input: Hokusai::Blocks::Input,
       hblock: Hokusai::Blocks::Hblock,
       empty: Hokusai::Blocks::Empty,
@@ -208,10 +217,11 @@ module HokusaiPaint
       layer: LayerItem,
     )
 
-    attr_accessor :name
+    attr_accessor :name, :selection
 
     def initialize(**args)
       @name = "New Layer"
+      @selection = Hokusai::Util::Selection.new
 
       super
     end
@@ -220,6 +230,8 @@ module HokusaiPaint
       control.tool.on_deactivate if control.tool.respond_to?(:on_deactivate)
 
       control.apply(Commands::LayerNew.new(@name))
+
+      selection.clear
 
       @name = "New Layer"
     end

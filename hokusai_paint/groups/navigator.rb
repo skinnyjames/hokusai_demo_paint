@@ -4,11 +4,11 @@ module HokusaiPaint
     [style]
     slider {
       height: 40.0;
-      background: rgb(89, 34, 46);
+      background:   rgb(151, 72, 72);
     }
 
     container {
-      background: rgb(114, 45, 60);
+      background: rgb(41, 170, 77);
     }
     sliderStyle {
       min: 1;
@@ -17,7 +17,7 @@ module HokusaiPaint
       initial: 100;
       height: 40;
       background: rgb(43, 28, 28);
-      fill: rgb(138, 57, 57);
+      fill: rgb(229, 162, 162);
     }
     EOF
 

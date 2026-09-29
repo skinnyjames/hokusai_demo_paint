@@ -19,14 +19,16 @@ module HokusaiPaint
     inject :control
 
     def hover(event)
-      control.tool.hover(event)
+      control.tool.hover(event) if node.meta.focused
     end
 
     def keypress(event)
+      return unless node.meta.focused
       control.tool.keypress(event)
     end
 
     def keydown(event)
+      return unless node.meta.focused
       control.tool.keydown(event)
     end
 

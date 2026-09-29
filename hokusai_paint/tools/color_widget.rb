@@ -33,10 +33,12 @@ module HokusaiPaint
         picker { @change="set_hue" ...pickerStyle}
         slider { ...sliderStyle :initial="initial_slider" @change="update_alpha" }
         vblock { ...inputContainer }
-          input { :model="rgba" ...inputStyle }
+          selectable
+            input { :model="rgba" ...inputStyle }
     EOF
 
     uses(
+      selectable: Hokusai::Blocks::Selectable,
       slider: Hokusai::Blocks::Slider,
       vblock: Hokusai::Blocks::Vblock,
       hblock: Hokusai::Blocks::Hblock,

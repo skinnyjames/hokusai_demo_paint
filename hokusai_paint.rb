@@ -170,6 +170,8 @@ class HokusaiPaint::App < Hokusai::Block
   }
 
   def handle_keypress(event)
+    puts @body unless @body.nil?
+
     if event.symbol == :z && (event.ctrl || event.super)
       if event.shift
         control.redo
@@ -250,6 +252,97 @@ class HokusaiPaint::App < Hokusai::Block
     @ruler = true
     super
   end
+
+  def on_mounted
+    # fetch("https://pigsfly.skinnyjames.net", {method: "GET"}) do |res|
+    #   p res
+    # end
+  end
+  
+  register_voice "paint" do |voice|
+    voice.build_action "redo" do |builder|
+      builder.description do
+        "Say redo to redo current action"
+      end
+
+      builder.on_match do
+        control.redo
+
+        "Redo complete"
+      end
+    end
+
+    voice.build_action "open file" do |builder|
+      builder.on_match do |str|
+        if md = /open file.*\s(.*)$/.match(str)
+          file = md[1].to_s.gsub(/\.$/, "")
+
+          if File.exist?(file)
+            basename = File.basename(file)
+            control.add_image_layer(basename, file)
+          end
+        end
+      end
+    end
+
+    voice.build_action "new layer" do |builder|
+      builder.description do
+        "Say new layer + name for new layer"
+      end
+
+      builder.on_match do |str|
+        control.add_layer("New layer #{control.counter += 1}")
+
+        "Layer (New Layer #{control.counter}) added"
+      end
+    end
+
+    voice.build_action "undo" do |builder|
+      builder.description do
+        "Say undo to current action"
+      end
+
+      builder.on_match do
+        control.undo
+
+        "Undo complete"
+      end
+    end
+
+    voice.build_action "zoom" do |builder|
+      builder.description do
+        "say zoom in or zoom out to zoom"
+      end
+
+      builder.on_match do |str|
+        case str
+        when /in/
+          control.set_zoom(control.zoom + 20)
+        when /out/
+          control.set_zoom(control.zoom - 20)
+        end
+
+        "Zoom at #{control.zoom} percent"
+      end
+    end
+
+    voice.build_action "tool" do |builder|
+      builder.description do
+        "Say (tool + name) to select tool.  Current is #{control.active_tool}"
+      end
+
+      builder.on_match do |str|
+        case str
+        when /rect/
+          control.tool_activate "rect"
+        when /transform/
+          control.tool_activate "transform"
+        when /brush/
+          control.tool_activate "brush"
+        end
+      end
+    end
+  end
 end
 
 Hokusai::Backend.run(HokusaiPaint::App) do |config|
@@ -257,14 +350,26 @@ Hokusai::Backend.run(HokusaiPaint::App) do |config|
   config.fps = 60
   config.width = 1400
   config.height = 800
-  # config.draw_fps = true
-  # config.log = true
+  config.event_waiting = false
+  
+  config.draw_fps = false
+  config.config_flags = HP_FLAG_WINDOW_RESIZABLE
   config.audio = false
+
+  config.accessibility do |aconfig|
+   aconfig.model_path = "assets/models/ggml-tiny.bin"
+   aconfig.hot_key = :grave
+  end
+
+  # config.hot_reload = "hokusai_paint.rb"
 
   config.after_load do
     Hokusai.fonts.register "default", Hokusai::Backend::Font.from_ext("assets/OpenSans.ttf", 60)
     Hokusai.fonts.activate "default"
 
+    # Hokusai.fonts.register "inter", Hokusai::Backend::Font.from("../trollio_maps/assets/Inter-Regular.ttf")
+
     Hokusai.fonts.register "icons", Hokusai::Backend::Font.from_ext("assets/fa2.ttf", 30, Hokusai::Blocks::Icon::MAP.values.join(""))
   end
 end
+
